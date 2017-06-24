@@ -28,11 +28,41 @@ class GenusController extends Controller
     }
 
     /**
-     * @Route("/genus/{genusName}")
+     * @Route("/genus")
+     */
+    public function listAction()
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $genuses = $em->getRepository('AppBundle:Genus')
+            ->findAllPublishedOrderedBySize();
+
+        return $this->render('genus/list.html.twig', [
+            'genuses' => $genuses
+        ]);
+
+    }
+
+    /**
+     * @Route("/genus/{genusName}", name="genus_show")
      */
     public function showAction($genusName)
     {
-        $funFact = 'Octopuses can change the color of their body in just *three-tenths* of a second!';
+        $em = $this->getDoctrine()->getManager();
+
+        $genus = $em->getRepository('AppBundle:Genus')
+            ->findOneBy([
+                'name' => $genusName
+            ]);
+
+        if (!$genus) {
+            throw $this->createNotFoundException('genus not found');
+        }
+
+        return $this->render('genus/show.html.twig', array(
+            'genus' => $genus
+        ));
+/*        $funFact = 'Octopuses can change the color of their body in just *three-tenths* of a second!';
         $funFact = $this->container->get('markdown.parser')->transform($funFact);
         $cache = $this->container->get('doctrine_cache.providers.my_markdown_cache');
         $key = md5($funFact);
@@ -51,12 +81,8 @@ class GenusController extends Controller
             'Octopus asked me a riddle, outsmarted me',
             'I counted 8 legs... as they wrapped around me',
             'Inked!'
-        ];
-        return $this->render('genus/show.html.twig', array(
-            'name' => $genusName,
-            'notes' => $notes,
-            'funFact' => $funFact
-        ));
+        ];*/
+
     }
 
     /**
