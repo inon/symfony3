@@ -6,3 +6,9 @@ AppBundle\Entity\Genus:
         funFact : <sentence()>
         updatedAt: <dateTimeBetween("-200 days", "now")>
         isPublished : <boolean(75)>
+AppBundle\Entity\GenusNote:
+    genus.note_{1..10}:
+        username: <userName()>
+        userAvatarFilename: '50%? leanna.jpeg : ryan.jpeg'
+        note: <paragraph()>
+        createdAt: <dateTimeBetween('-6 months', 'now')>
