@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\GenusNoteRepository")
  * @ORM\Table(name="genus_note")
  */
 class GenusNote
@@ -24,18 +24,18 @@ class GenusNote
     private $username;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Genus")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $genus;
-
-    /**
      * @return mixed
      */
     public function getGenus()
     {
         return $this->genus;
     }
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Genus", inversedBy="notes")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $genus;
 
     /**
      * @param mixed $genus

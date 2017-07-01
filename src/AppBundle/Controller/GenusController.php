@@ -58,6 +58,9 @@ class GenusController extends Controller
 
     /**
      * @Route("/genus/{genusName}", name="genus_show")
+     * @param $genusName
+     *
+     * @return Response
      */
     public function showAction($genusName)
     {
@@ -68,33 +71,18 @@ class GenusController extends Controller
                 'name' => $genusName
             ]);
 
+        $recentNotes = $em->getRepository('AppBundle:GenusNote')
+            ->findAllPublishedOrderedByRecentlyActive($genus);
+
+
         if (!$genus) {
             throw $this->createNotFoundException('genus not found');
         }
 
         return $this->render('genus/show.html.twig', array(
-            'genus' => $genus
+            'genus' => $genus,
+            'recentNoteCount' => count($recentNotes)
         ));
-/*        $funFact = 'Octopuses can change the color of their body in just *three-tenths* of a second!';
-        $funFact = $this->container->get('markdown.parser')->transform($funFact);
-        $cache = $this->container->get('doctrine_cache.providers.my_markdown_cache');
-        $key = md5($funFact);
-
-        if ($cache->contains($key)) {
-            $funFact = $cache->fetch($key);
-        } else {
-            sleep(1);
-            $funFact = $this->container->get('markdown.parser')
-                ->transform($funFact);
-            $cache->save($key, $funFact);
-        }
-
-        $cache = $this->get('doctrine_cache.providers.my_markdown_cache');
-        $notes = [
-            'Octopus asked me a riddle, outsmarted me',
-            'I counted 8 legs... as they wrapped around me',
-            'Inked!'
-        ];*/
 
     }
 
@@ -107,11 +95,20 @@ class GenusController extends Controller
      */
     public function getNotesAction(Genus $genus)
     {
+        $notes = [];
+        foreach ($genus->getNotes() as $note) {
+            $notes[] = [
+                'id' => $note->getId(),
+                'username' => $note->getUsername(),
+                'avatarUri' => '/images/'.$note->getUserAvatarFilename(),
+                'note' => $note->getNote(),
+                'date' => $note->getCreatedAt()->format('M d, Y')
+            ];
+        }
 
-        $em = $this->getDoctrine()->getManager();
-
-        $data = $em->getRepository('AppBundle:Genus')
-            ->findOneBy(['name' => $genus]);
+        $data = [
+            'notes' => $notes
+        ];
 
 
         return new Response(json_encode($data));
