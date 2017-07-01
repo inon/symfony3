@@ -107,6 +107,7 @@ class GenusController extends Controller
      */
     public function getNotesAction(Genus $genus)
     {
+
         $em = $this->getDoctrine()->getManager();
 
         $data = $em->getRepository('AppBundle:Genus')
